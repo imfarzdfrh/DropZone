@@ -39,16 +39,16 @@ const handleInput = (event: Event) => {
     :disabled="disabled"
     :rows="rows"
     :class="[
-      'w-full rounded-lg border bg-background text-foreground',
-      'placeholder:text-muted',
+      'w-full rounded-md border border-border bg-[#171b17] text-foreground',
+      'placeholder:text-muted/75',
       'outline-none',
-      'transition-all duration-200',
+      'transition-[border-color,box-shadow,background-color] duration-200',
       'disabled:cursor-not-allowed disabled:opacity-50',
-      'focus:ring-2',
+      'focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20',
 
       {
-        'border-border focus:border-primary focus:ring-primary/20': !error,
-        'border-danger focus:border-danger focus:ring-danger/20': error,
+        'border-primary focus-visible:border-primary focus-visible:ring-primary/20': !error,
+        'border-red-400 focus-visible:border-red-400 focus-visible:ring-red-400/20': error,
         'resize-y': resize,
         'resize-none': !resize,
       },
@@ -59,6 +59,7 @@ const handleInput = (event: Event) => {
         'px-4 py-3 text-base': size === 'lg',
       },
     ]"
+    :aria-invalid="error ? 'true' : undefined"
     @input="handleInput"
   />
 </template>

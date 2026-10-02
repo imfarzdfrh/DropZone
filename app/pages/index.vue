@@ -1,61 +1,10 @@
 <script setup lang="ts">
+import { categories, skins } from '~/data/skins';
+
 const activeCategory = ref('All skins');
 const searchQuery = ref('');
-const cartCount = ref(0);
+const { addToCart } = useCart();
 const favorites = ref<number[]>([]);
-
-const categories = ['All skins', 'Rifles', 'Knives', 'Pistols', 'Gloves'];
-
-const skins = [
-  {
-    id: 1,
-    name: 'Vandal / Prism Shift',
-    game: 'VALORANT',
-    category: 'Rifles',
-    price: 24.9,
-    oldPrice: 32.0,
-    label: 'HOT DROP',
-    image:
-      'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1000&q=85',
-    tone: 'violet',
-  },
-  {
-    id: 2,
-    name: 'Phantom / Afterglow',
-    game: 'VALORANT',
-    category: 'Rifles',
-    price: 18.5,
-    oldPrice: null,
-    label: 'NEW',
-    image:
-      'https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&w=1000&q=85',
-    tone: 'green',
-  },
-  {
-    id: 3,
-    name: 'Butterfly / Carbon',
-    game: 'CS2',
-    category: 'Knives',
-    price: 42.0,
-    oldPrice: null,
-    label: 'RARE',
-    image:
-      'https://images.unsplash.com/photo-1598550476439-6847785fcea6?auto=format&fit=crop&w=1000&q=85',
-    tone: 'amber',
-  },
-  {
-    id: 4,
-    name: 'Ghost / Cold Snap',
-    game: 'VALORANT',
-    category: 'Pistols',
-    price: 12.75,
-    oldPrice: 16.0,
-    label: '−20%',
-    image:
-      'https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?auto=format&fit=crop&w=1000&q=85',
-    tone: 'blue',
-  },
-];
 
 const filteredSkins = computed(() => {
   const query = searchQuery.value.trim().toLowerCase();
@@ -76,43 +25,7 @@ function toggleFavorite(id: number) {
 
 <template>
   <main class="storefront">
-    <div class="announcement">
-      <span class="announcement-dot" />
-      <span>THE DROP IS LIVE</span>
-      <span class="announcement-divider">/</span>
-      <span>Get 10% off your first loadout with <strong>FIRSTDROP</strong></span>
-      <span class="announcement-arrow">↗</span>
-    </div>
-
-    <header class="site-header">
-      <a class="wordmark" href="#top" aria-label="Dropzone home">
-        <span class="wordmark-mark">D</span>
-        <span>DROPZONE<span class="wordmark-period">.</span></span>
-      </a>
-      <nav class="desktop-nav" aria-label="Main navigation">
-        <a class="nav-link nav-link-active" href="#shop">Shop</a>
-        <a class="nav-link" href="#shop" @click="activeCategory = 'Knives'">Knives</a>
-        <a class="nav-link" href="#shop">How it works</a>
-      </nav>
-      <div class="header-actions">
-        <label class="search-box">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="11" cy="11" r="6.5" />
-            <path d="m16 16 4 4" />
-          </svg>
-          <input v-model="searchQuery" aria-label="Search skins" placeholder="Search skins..." />
-          <kbd>/</kbd>
-        </label>
-        <button class="cart-button" aria-label="Shopping cart">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M3 4h2l2.1 10.1a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 1.9-1.4L21 8H6" />
-            <circle cx="10" cy="20" r="1" />
-            <circle cx="18" cy="20" r="1" />
-          </svg>
-          <span>Cart</span><b>{{ cartCount }}</b>
-        </button>
-      </div>
-    </header>
+    <SiteHeader />
 
     <section id="top" class="hero">
       <div class="hero-copy">
@@ -123,7 +36,7 @@ function toggleFavorite(id: number) {
           Upgrade your game without the grind.
         </p>
         <div class="hero-actions">
-          <a class="button-primary" href="#shop">Explore the drop <span>↗</span></a>
+          <NuxtLink class="button-primary" to="/shop">Explore the drop <span>↗</span></NuxtLink>
           <div class="social-proof">
             <div class="avatar-stack"><i>J</i><i>M</i><i>K</i></div>
             <span><strong>2.4k+</strong> players geared up</span>
@@ -144,8 +57,34 @@ function toggleFavorite(id: number) {
           </div>
         </div>
       </div>
-      <div class="hero-art" role="img" aria-label="Competitive gaming arena">
+      <div class="hero-art" role="group" aria-label="Featured gaming gear">
         <div class="hero-art-shade" />
+        <img
+          class="hero-headset"
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Oculus-Rift-CV1-Headset-Front_with_transparent_background.png/960px-Oculus-Rift-CV1-Headset-Front_with_transparent_background.png"
+          alt="Black virtual reality gaming headset"
+          width="960"
+          height="663"
+          fetchpriority="high"
+        />
+        <img
+          class="hero-floating hero-controller"
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Xbox-360-Controller-Black.png/960px-Xbox-360-Controller-Black.png"
+          alt=""
+          aria-hidden="true"
+          width="960"
+          height="726"
+          loading="lazy"
+        />
+        <img
+          class="hero-floating hero-keyboard"
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Sega-Dreamcast-Keyboard.png/960px-Sega-Dreamcast-Keyboard.png"
+          alt=""
+          aria-hidden="true"
+          width="960"
+          height="454"
+          loading="lazy"
+        />
         <div class="hero-index">COLLECTION 01 <span>—</span> 2025</div>
         <div class="drop-card">
           <span class="drop-card-label">FEATURED DROP</span><strong>NEON<br />AFTERHOURS</strong
@@ -173,7 +112,7 @@ function toggleFavorite(id: number) {
           <div class="eyebrow shop-eyebrow"><span /> THE GOOD STUFF</div>
           <h2>Fresh from the <em>drop.</em></h2>
         </div>
-        <a class="view-all" href="#shop">VIEW ALL SKINS <span>↗</span></a>
+        <NuxtLink class="view-all" to="/shop">VIEW ALL SKINS <span>↗</span></NuxtLink>
       </div>
       <div class="shop-toolbar">
         <div class="category-list" aria-label="Filter by category">
@@ -233,7 +172,7 @@ function toggleFavorite(id: number) {
               <button
                 class="add-button"
                 :aria-label="`Add ${skin.name} to cart`"
-                @click="cartCount++"
+                @click="addToCart(skin.id)"
               >
                 +
               </button>
@@ -257,17 +196,10 @@ function toggleFavorite(id: number) {
         <span class="banner-kicker">DON'T JUST PLAY. ARRIVE.</span>
         <h2>Your next main<br />character energy.</h2>
       </div>
-      <a class="button-dark" href="#shop">Find your skin <span>↗</span></a>
+      <NuxtLink class="button-dark" to="/shop">Find your skin <span>↗</span></NuxtLink>
       <span class="banner-star">✳</span>
     </section>
 
-    <footer class="site-footer">
-      <a class="wordmark footer-wordmark" href="#top"
-        ><span class="wordmark-mark">D</span
-        ><span>DROPZONE<span class="wordmark-period">.</span></span></a
-      >
-      <span>GOOD GAMES. BETTER LOOKS.</span>
-      <span>© 2025 DROPZONE</span>
-    </footer>
+    <SiteFooter />
   </main>
 </template>

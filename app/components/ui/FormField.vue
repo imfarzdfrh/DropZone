@@ -4,6 +4,7 @@ interface Props {
   error?: string;
   hint?: string;
   required?: boolean;
+  inputId?: string;
 }
 
 withDefaults(defineProps<Props>(), {
@@ -11,12 +12,13 @@ withDefaults(defineProps<Props>(), {
   error: '',
   hint: '',
   required: false,
+  inputId: '',
 });
 </script>
 
 <template>
   <div class="w-full">
-    <Label v-if="label" :required="required">
+    <Label v-if="label" :input-id="inputId" :required="required">
       {{ label }}
     </Label>
 

@@ -37,16 +37,17 @@ const handleChange = (event: Event) => {
     :value="modelValue"
     :disabled="disabled"
     :class="[
-      'h-10 w-full rounded-lg border bg-background px-4 text-sm text-foreground',
-      'outline-none transition-all duration-200',
+      'min-h-11 w-full rounded-md border border-border bg-[#171b17] px-4 text-sm text-foreground',
+      'outline-none transition-[border-color,box-shadow,background-color] duration-200',
       'disabled:cursor-not-allowed disabled:opacity-50',
-      'focus:ring-2',
+      'focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20',
 
       {
-        'border-border focus:border-primary focus:ring-primary/20': !error,
-        'border-danger focus:border-danger focus:ring-danger/20': error,
+        'border-primary focus-visible:border-primary focus-visible:ring-primary/20': !error,
+        'border-red-400 focus-visible:border-red-400 focus-visible:ring-red-400/20': error,
       },
     ]"
+    :aria-invalid="error ? 'true' : undefined"
     @change="handleChange"
   >
     <option value="" disabled>

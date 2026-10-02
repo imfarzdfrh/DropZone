@@ -11,10 +11,10 @@ withDefaults(defineProps<Props>(), {
 <template>
   <div
     :class="[
-      'rounded-2xl border border-border bg-background shadow-soft',
-      'transition-all duration-300',
+      'rounded-lg border border-border bg-[#151915] shadow-lg shadow-black/20',
+      'transition-[transform,border-color,box-shadow] duration-300',
       {
-        'hover:-translate-y-1 hover:shadow-medium': hover,
+        'hover:-translate-y-1 hover:border-primary/35 hover:shadow-xl hover:shadow-black/30': hover,
       },
     ]"
   >
