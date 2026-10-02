@@ -6,9 +6,16 @@ const props = defineProps<{
 const isLogin = computed(() => props.mode === 'login');
 const showPassword = ref(false);
 const statusMessage = ref('');
+const account = useAccount();
 
-function handleSubmit() {
-  statusMessage.value = 'Authentication is not connected yet.';
+async function handleSubmit(event: SubmitEvent) {
+  const form = event.currentTarget as HTMLFormElement;
+  const values = new FormData(form);
+  const email = String(values.get('email') ?? '');
+  const username = String(values.get('name') ?? '');
+  account.startDemoSession(email, username || undefined);
+  statusMessage.value = 'Demo account ready. Authentication is not connected.';
+  await navigateTo('/account');
 }
 </script>
 
@@ -52,9 +59,14 @@ function handleSubmit() {
         </p>
 
         <form class="auth-form" @submit.prevent="handleSubmit">
-          <label v-if="!isLogin" class="auth-field">
-            <span>Display name</span>
-            <input
+          <FormField
+            v-if="!isLogin"
+            label="Display name"
+            input-id="display-name"
+            required
+            class="auth-field"
+          >
+            <Input
               id="display-name"
               type="text"
               name="name"
@@ -62,11 +74,10 @@ function handleSubmit() {
               placeholder="How players know you"
               required
             />
-          </label>
+          </FormField>
 
-          <label class="auth-field">
-            <span>Email address</span>
-            <input
+          <FormField label="Email address" input-id="email" required class="auth-field">
+            <Input
               id="email"
               type="email"
               name="email"
@@ -74,12 +85,11 @@ function handleSubmit() {
               placeholder="you@example.com"
               required
             />
-          </label>
+          </FormField>
 
-          <label class="auth-field">
-            <span>Password</span>
+          <FormField label="Password" input-id="password" required class="auth-field">
             <span class="auth-password-wrap">
-              <input
+              <Input
                 id="password"
                 :type="showPassword ? 'text' : 'password'"
                 name="password"
@@ -97,7 +107,7 @@ function handleSubmit() {
                 {{ showPassword ? 'Hide' : 'Show' }}
               </button>
             </span>
-          </label>
+          </FormField>
 
           <div v-if="isLogin" class="auth-form-options">
             <label class="auth-checkbox">
@@ -115,9 +125,9 @@ function handleSubmit() {
             <span>I agree to the Terms of Service and Privacy Policy.</span>
           </label>
 
-          <button class="auth-submit" type="submit">
+          <Button class="auth-submit" type="submit" variant="primary" block>
             {{ isLogin ? 'Sign in' : 'Create account' }} <span aria-hidden="true">↗</span>
-          </button>
+          </Button>
           <p v-if="statusMessage" class="auth-status" role="status">{{ statusMessage }}</p>
         </form>
 
