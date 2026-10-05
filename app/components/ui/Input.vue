@@ -57,5 +57,5 @@ const handleInput = (event: Event) => {
     ]"
     :aria-invalid="error ? 'true' : undefined"
     @input="handleInput"
-  />
+  >
 </template>

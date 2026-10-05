@@ -22,10 +22,12 @@ const cartLines = computed(() =>
 
 const walletContribution = computed(() =>
   useWalletFunds.value && account.user.value
-    ? Math.min(cart.subtotal, account.user.value.walletBalance)
+    ? Math.min(cart.subtotal.value, account.user.value.walletBalance)
     : 0,
 );
-const remainingAfterWallet = computed(() => Math.max(0, cart.subtotal - walletContribution.value));
+const remainingAfterWallet = computed(() =>
+  Math.max(0, cart.subtotal.value - walletContribution.value),
+);
 
 function beginCheckout() {
   checkoutMessage.value = walletContribution.value
@@ -91,15 +93,15 @@ function beginCheckout() {
           <h2>Order summary</h2>
           <div class="summary-row">
             <span
-              >Items <i>({{ cart.count }})</i></span
-            ><strong>${{ cart.subtotal.toFixed(2) }}</strong>
+              >Items <i>({{ cart.count.value }})</i></span
+            ><strong>${{ cart.subtotal.value.toFixed(2) }}</strong>
           </div>
           <div class="summary-row">
             <span>Digital delivery</span><strong class="included">INCLUDED</strong>
           </div>
           <div v-if="account.user.value" class="cart-wallet-option">
             <label
-              ><input v-model="useWalletFunds" type="checkbox" /><span>Use wallet funds</span
+              ><input v-model="useWalletFunds" type="checkbox" ><span>Use wallet funds</span
               ><strong>${{ account.user.value.walletBalance.toFixed(2) }} available</strong></label
             >
             <div v-if="useWalletFunds" class="cart-wallet-breakdown">
@@ -116,7 +118,7 @@ function beginCheckout() {
             <span>{{ useWalletFunds ? 'Remaining due' : 'Estimated total' }}</span
             ><strong
               >${{
-                useWalletFunds ? remainingAfterWallet.toFixed(2) : cart.subtotal.toFixed(2)
+                useWalletFunds ? remainingAfterWallet.toFixed(2) : cart.subtotal.value.toFixed(2)
               }}</strong
             >
           </div>

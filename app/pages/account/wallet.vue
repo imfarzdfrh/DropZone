@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { validDeposit } from '~/utils/storeValidation';
 const account = useAccount();
 const amount = ref(10);
 const customAmount = ref('');
@@ -12,12 +13,8 @@ const formattedDate = (date: string) =>
 
 function continueToPayment() {
   message.value = '';
-  if (
-    !Number.isFinite(selectedAmount.value) ||
-    selectedAmount.value < 5 ||
-    selectedAmount.value > 500
-  ) {
-    message.value = 'Choose an amount between $5 and $500.';
+  if (!validDeposit(selectedAmount.value)) {
+    message.value = 'Choose an amount between $5 and $500 with at most two decimal places.';
     return;
   }
   step.value = 'payment';
@@ -29,6 +26,10 @@ function recordPendingRequest() {
       'Payment provider unavailable. A pending demo request was recorded; your balance has not changed.';
     step.value = 'amount';
     customAmount.value = '';
+    amount.value = 10;
+  } else {
+    message.value = 'Unable to record this amount. Check your session and deposit amount.';
+    step.value = 'amount';
   }
 }
 
@@ -88,7 +89,7 @@ useSeoMeta({
                 max="500"
                 step="0.01"
                 placeholder="Enter amount"
-                @input="amount = 0" /></span
+                @input="amount = 0" ></span
           ></label>
           <Button type="button" @click="continueToPayment"
             >Continue to payment <span aria-hidden="true">↗</span></Button
