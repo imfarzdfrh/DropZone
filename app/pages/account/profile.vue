@@ -67,11 +67,15 @@ async function saveProfile() {
     errorMessage.value = 'Username must be 3–20 characters using letters, numbers, or underscores.';
     return;
   }
+  if (saving.value) return;
+  const profile = { ...fields };
+  const ownerId = user.value?.id;
   saving.value = true;
   try {
     if (selectedFile.value) await account.uploadAvatar(selectedFile.value);
     else if (removeCurrentAvatar.value) await account.removeAvatar();
-    account.updateProfile(fields);
+    if (user.value?.id !== ownerId) throw new Error('Your session changed. Please try again.');
+    account.updateProfile(profile);
     successMessage.value = 'Profile updated successfully.';
     selectedFile.value = null;
     removeCurrentAvatar.value = false;
@@ -106,7 +110,7 @@ useSeoMeta({
       <form class="profile-edit-form" @submit.prevent="saveProfile">
         <div class="profile-avatar-editor">
           <div class="profile-avatar-preview">
-            <img v-if="preview" :src="preview" alt="Preview of selected avatar" />
+            <img v-if="preview" :src="preview" alt="Preview of selected avatar" >
             <UserAvatar
               v-else
               :avatar="removeCurrentAvatar ? null : (user?.avatar ?? null)"
@@ -136,7 +140,7 @@ useSeoMeta({
             type="file"
             accept="image/jpeg,image/png,image/webp"
             @change="selectAvatar"
-          />
+          >
         </div>
         <div class="profile-form-grid">
           <label class="account-field account-field-wide"
@@ -147,22 +151,22 @@ useSeoMeta({
               required
               minlength="3"
               maxlength="20"
-          /></label>
+          ></label>
           <label class="account-field"
             ><span>First name</span
             ><input v-model.trim="fields.firstName" autocomplete="given-name"
-          /></label>
+          ></label>
           <label class="account-field"
             ><span>Last name</span><input v-model.trim="fields.lastName" autocomplete="family-name"
-          /></label>
+          ></label>
           <label class="account-field account-field-wide"
             ><span>Email address</span
             ><input v-model.trim="fields.email" type="email" autocomplete="email" required
-          /></label>
+          ></label>
           <label class="account-field"
             ><span>Phone number <small>Optional</small></span
             ><input v-model.trim="fields.phone" type="tel" autocomplete="tel"
-          /></label>
+          ></label>
           <label class="account-field account-field-wide"
             ><span>About me <small>Optional</small></span
             ><textarea

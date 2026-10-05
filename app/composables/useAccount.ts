@@ -1,3 +1,5 @@
+import { validAccount, validTransaction, validDeposit } from '~/utils/storeValidation';
+
 export type WalletStatus = 'Completed' | 'Pending' | 'Failed' | 'Refunded';
 export type WalletType = 'Deposit' | 'Purchase' | 'Refund';
 
@@ -36,43 +38,38 @@ function openAvatarDatabase(): Promise<IDBDatabase> {
   });
 }
 
-async function saveAvatarBlob(id: string, blob: Blob) {
+async function avatarTransaction<T>(
+  mode: IDBTransactionMode,
+  operation: (store: IDBObjectStore) => IDBRequest<T>,
+): Promise<T> {
   const database = await openAvatarDatabase();
-  await new Promise<void>((resolve, reject) => {
-    const request = database
-      .transaction(avatarStoreName, 'readwrite')
-      .objectStore(avatarStoreName)
-      .put(blob, id);
-    request.onsuccess = () => resolve();
-    request.onerror = () => reject(request.error);
-  });
-  database.close();
+  try {
+    return await new Promise<T>((resolve, reject) => {
+      const transaction = database.transaction(avatarStoreName, mode);
+      const request = operation(transaction.objectStore(avatarStoreName));
+      transaction.oncomplete = () => resolve(request.result);
+      transaction.onerror = () => reject(transaction.error);
+      transaction.onabort = () =>
+        reject(transaction.error ?? new Error('Avatar storage transaction aborted.'));
+    });
+  } finally {
+    database.close();
+  }
+}
+
+async function saveAvatarBlob(id: string, blob: Blob) {
+  await avatarTransaction('readwrite', (store) => store.put(blob, id));
 }
 
 export async function readAvatarBlob(id: string): Promise<Blob | null> {
   if (!import.meta.client || !('indexedDB' in window)) return null;
-  const database = await openAvatarDatabase();
-  const blob = await new Promise<Blob | null>((resolve, reject) => {
-    const request = database.transaction(avatarStoreName).objectStore(avatarStoreName).get(id);
-    request.onsuccess = () => resolve((request.result as Blob | undefined) ?? null);
-    request.onerror = () => reject(request.error);
-  });
-  database.close();
-  return blob;
+  const blob = await avatarTransaction('readonly', (store) => store.get(id));
+  return blob instanceof Blob ? blob : null;
 }
 
 async function deleteAvatarBlob(id: string) {
   if (!import.meta.client || !('indexedDB' in window)) return;
-  const database = await openAvatarDatabase();
-  await new Promise<void>((resolve, reject) => {
-    const request = database
-      .transaction(avatarStoreName, 'readwrite')
-      .objectStore(avatarStoreName)
-      .delete(id);
-    request.onsuccess = () => resolve();
-    request.onerror = () => reject(request.error);
-  });
-  database.close();
+  await avatarTransaction('readwrite', (store) => store.delete(id));
 }
 
 function demoTransactions(): WalletTransaction[] {
@@ -107,8 +104,9 @@ export function useAccount() {
       [user.value.firstName, user.value.lastName].filter(Boolean).join(' ') || user.value.username
     );
   });
-  const orderCount = computed(() => 3);
-  const wishlistCount = computed(() => 4);
+  const orderCount = computed(() => 0);
+  const { favorites } = useWishlist();
+  const wishlistCount = computed(() => favorites.value.length);
 
   onMounted(() => {
     if (initialized.value) return;
@@ -119,23 +117,40 @@ export function useAccount() {
           user?: AccountUser | null;
           transactions?: WalletTransaction[];
         };
-        user.value = data.user ?? null;
-        transactions.value = data.transactions ?? [];
+        user.value = validAccount(data.user) ? data.user! : null;
+        transactions.value =
+          user.value && Array.isArray(data.transactions)
+            ? data.transactions.filter(validTransaction)
+            : [];
       }
     } catch {
-      localStorage.removeItem(accountStorageKey);
+      user.value = null;
+      transactions.value = [];
+      try {
+        localStorage.removeItem(accountStorageKey);
+      } catch {
+        /* Storage unavailable. */
+      }
     }
     initialized.value = true;
-    watch(
-      [user, transactions],
-      ([nextUser, nextTransactions]) => {
-        localStorage.setItem(
-          accountStorageKey,
-          JSON.stringify({ user: nextUser, transactions: nextTransactions }),
-        );
-      },
-      { deep: true },
+    const scope = effectScope(true);
+    scope.run(() =>
+      watch(
+        [user, transactions],
+        ([nextUser, nextTransactions]) => {
+          try {
+            localStorage.setItem(
+              accountStorageKey,
+              JSON.stringify({ user: nextUser, transactions: nextTransactions }),
+            );
+          } catch {
+            /* Storage may be full or unavailable. */
+          }
+        },
+        { deep: true, flush: 'sync' },
+      ),
     );
+    useNuxtApp().vueApp.onUnmount(() => scope.stop());
   });
 
   function startDemoSession(email: string, username?: string) {
@@ -144,7 +159,10 @@ export function useAccount() {
     const now = new Date().toISOString();
     user.value = {
       id: `demo-${Date.now()}`,
-      username: suggestedName.replace(/\s+/g, '_'),
+      username: suggestedName
+        .replace(/[^a-zA-Z0-9_]/g, '_')
+        .slice(0, 20)
+        .padEnd(3, '_'),
       email: normalizedEmail,
       avatar: null,
       firstName: username?.trim() ?? '',
@@ -160,11 +178,18 @@ export function useAccount() {
   function updateProfile(
     profile: Pick<AccountUser, 'username' | 'firstName' | 'lastName' | 'email' | 'phone' | 'bio'>,
   ) {
-    if (!user.value) return;
-    user.value = { ...user.value, ...profile };
+    if (!user.value) throw new Error('Sign in before editing your profile.');
+    if (
+      !/^[a-zA-Z0-9_]{3,20}$/.test(profile.username) ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profile.email.trim())
+    )
+      throw new Error('Enter a valid username and email address.');
+    user.value = { ...user.value, ...profile, email: profile.email.trim().toLowerCase() };
   }
 
   async function uploadAvatar(file: File): Promise<string> {
+    const ownerId = user.value?.id;
+    if (!ownerId) throw new Error('Sign in before uploading an avatar.');
     if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
       throw new Error('Choose a JPG, PNG, or WebP image.');
     }
@@ -192,23 +217,29 @@ export function useAccount() {
     }
     const id = `avatar-${crypto.randomUUID()}`;
     await saveAvatarBlob(id, file);
-    const oldAvatar = user.value?.avatar;
-    if (oldAvatar) await deleteAvatarBlob(oldAvatar);
-    if (user.value) user.value = { ...user.value, avatar: id };
+    if (user.value?.id !== ownerId) {
+      await deleteAvatarBlob(id);
+      throw new Error('Your session changed. Please try again.');
+    }
+    const oldAvatar = user.value.avatar;
+    user.value = { ...user.value, avatar: id };
+    if (oldAvatar) await deleteAvatarBlob(oldAvatar).catch(() => {});
     return id;
   }
 
   async function removeAvatar() {
+    const ownerId = user.value?.id;
     const oldAvatar = user.value?.avatar;
     if (oldAvatar) await deleteAvatarBlob(oldAvatar);
-    if (user.value) user.value = { ...user.value, avatar: null };
+    if (user.value?.id === ownerId && user.value && user.value.avatar === oldAvatar)
+      user.value = { ...user.value, avatar: null };
   }
 
   function requestDeposit(amount: number) {
-    if (!user.value || amount < 5 || amount > 500) return false;
+    if (!user.value || !validDeposit(amount)) return false;
     transactions.value = [
       {
-        id: `request-${Date.now()}`,
+        id: `request-${crypto.randomUUID()}`,
         type: 'Deposit',
         description: 'Demo deposit request',
         amount,

@@ -19,10 +19,11 @@ onMounted(() => document.addEventListener('pointerdown', closeProfileMenu));
 onBeforeUnmount(() => document.removeEventListener('pointerdown', closeProfileMenu));
 
 async function logOut() {
-  account.signOut();
   profileMenuOpen.value = false;
   mobileMenuOpen.value = false;
+  // Leave protected routes before clearing the session so their guard does not race this redirect.
   await navigateTo('/');
+  account.signOut();
 }
 
 async function searchShop() {
@@ -79,7 +80,7 @@ async function searchShop() {
           <circle cx="11" cy="11" r="6.5" />
           <path d="m16 16 4 4" />
         </svg>
-        <input v-model="searchQuery" aria-label="Search skins" placeholder="Search skins..." />
+        <input v-model="searchQuery" aria-label="Search skins" placeholder="Search skins..." >
         <kbd>/</kbd>
       </form>
       <NuxtLink v-if="!account.isAuthenticated.value" class="header-account" to="/login"
@@ -192,7 +193,7 @@ async function searchShop() {
           type="search"
           aria-label="Search skins"
           placeholder="Search skins..."
-        />
+        >
         <button type="submit" aria-label="Search">↗</button>
       </form>
     </div>

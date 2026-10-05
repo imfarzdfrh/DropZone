@@ -29,7 +29,7 @@ async function handleSubmit(event: SubmitEvent) {
 
       <div class="auth-visual-copy">
         <span class="auth-kicker"><i /> YOUR NEXT ROUND STARTS HERE</span>
-        <p>Make every<br />match <em>yours.</em></p>
+        <p>Make every<br >match <em>yours.</em></p>
         <div class="auth-visual-bottom">
           <span>THE RIGHT LOOK CHANGES EVERYTHING</span>
           <span>01 <i /> 04</span>
@@ -50,6 +50,10 @@ async function handleSubmit(event: SubmitEvent) {
           isLogin ? 'GOOD TO SEE YOU AGAIN' : 'JOIN THE DROP'
         }}</span>
         <h1>{{ isLogin ? 'Welcome back.' : 'Create your account.' }}</h1>
+        <p class="auth-status" role="note">
+          Demo mode: any valid email opens a local sample account. Passwords are not verified or
+          stored.
+        </p>
         <p class="auth-intro">
           {{
             isLogin
@@ -111,7 +115,7 @@ async function handleSubmit(event: SubmitEvent) {
 
           <div v-if="isLogin" class="auth-form-options">
             <label class="auth-checkbox">
-              <input type="checkbox" name="remember" />
+              <input type="checkbox" name="remember" >
               <span>Keep me signed in</span>
             </label>
             <a
@@ -121,7 +125,7 @@ async function handleSubmit(event: SubmitEvent) {
             >
           </div>
           <label v-else class="auth-checkbox auth-terms">
-            <input type="checkbox" name="terms" required />
+            <input type="checkbox" name="terms" required >
             <span>I agree to the Terms of Service and Privacy Policy.</span>
           </label>
 

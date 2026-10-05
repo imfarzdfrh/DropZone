@@ -3,7 +3,13 @@ const route = useRoute();
 const account = useAccount();
 
 onMounted(() => {
-  if (!account.isAuthenticated.value) void navigateTo('/login');
+  watch(
+    account.isAuthenticated,
+    (authenticated) => {
+      if (!authenticated) void navigateTo('/login');
+    },
+    { immediate: true },
+  );
 });
 
 const links = [
@@ -57,7 +63,7 @@ const links = [
             <p>Profile and wallet data are stored locally in this browser.</p>
           </div>
         </aside>
-        <div class="account-content"><slot /></div>
+        <div v-if="account.isAuthenticated.value" class="account-content"><slot /></div>
       </div>
     </section>
     <SiteFooter />

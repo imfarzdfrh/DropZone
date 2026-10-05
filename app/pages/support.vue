@@ -21,7 +21,7 @@ function submitSupportRequest() {
     <SiteHeader />
     <section class="standard-hero support-hero">
       <span class="eyebrow"><span /> REAL PEOPLE. PLAYER FIRST.</span>
-      <h1>Need a hand?<br /><em>We’ve got you.</em></h1>
+      <h1>Need a hand?<br ><em>We’ve got you.</em></h1>
       <p>Order question, account hiccup, or just need a little direction? Start here.</p>
     </section>
 

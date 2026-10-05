@@ -24,12 +24,20 @@ const initials = computed(
 
 watch(
   () => props.avatar,
-  async (id) => {
+  async (id, _previous, onCleanup) => {
+    let cancelled = false;
+    onCleanup(() => {
+      cancelled = true;
+    });
     if (source.value) URL.revokeObjectURL(source.value);
     source.value = '';
     if (!id) return;
-    const blob = await readAvatarBlob(id);
-    if (blob) source.value = URL.createObjectURL(blob);
+    try {
+      const blob = await readAvatarBlob(id);
+      if (blob && !cancelled) source.value = URL.createObjectURL(blob);
+    } catch {
+      /* Initials remain visible if avatar storage is unavailable. */
+    }
   },
   { immediate: true },
 );
@@ -41,7 +49,7 @@ onBeforeUnmount(() => {
 
 <template>
   <span class="user-avatar" :class="`user-avatar-${size}`" :aria-label="`${name}'s avatar`">
-    <img v-if="source" :src="source" alt="" />
+    <img v-if="source" :src="source" alt="" >
     <span v-else aria-hidden="true">{{ initials }}</span>
   </span>
 </template>

@@ -2,16 +2,18 @@
 import { categories, skins } from '~/data/skins';
 
 const route = useRoute();
-const activeCategory = ref(String(route.query.category ?? 'All skins'));
+const categoryFromQuery = (value: unknown) =>
+  typeof value === 'string' && categories.includes(value) ? value : 'All skins';
+const activeCategory = ref(categoryFromQuery(route.query.category));
 const searchQuery = ref(String(route.query.search ?? ''));
 const sortBy = ref('featured');
-const favorites = ref<number[]>([]);
+const { favorites, toggleFavorite } = useWishlist();
 const { addToCart } = useCart();
 
 watch(
   () => route.query.category,
   (category) => {
-    activeCategory.value = String(category ?? 'All skins');
+    activeCategory.value = categoryFromQuery(category);
   },
 );
 watch(
@@ -37,12 +39,6 @@ const visibleSkins = computed(() => {
     return matchingSkins.sort((first, second) => second.price - first.price);
   return matchingSkins;
 });
-
-function toggleFavorite(id: number) {
-  favorites.value = favorites.value.includes(id)
-    ? favorites.value.filter((favoriteId) => favoriteId !== id)
-    : [...favorites.value, id];
-}
 </script>
 
 <template>

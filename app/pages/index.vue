@@ -4,7 +4,7 @@ import { categories, skins } from '~/data/skins';
 const activeCategory = ref('All skins');
 const searchQuery = ref('');
 const { addToCart } = useCart();
-const favorites = ref<number[]>([]);
+const { favorites, toggleFavorite } = useWishlist();
 
 const filteredSkins = computed(() => {
   const query = searchQuery.value.trim().toLowerCase();
@@ -15,12 +15,6 @@ const filteredSkins = computed(() => {
     return matchesCategory && matchesQuery;
   });
 });
-
-function toggleFavorite(id: number) {
-  favorites.value = favorites.value.includes(id)
-    ? favorites.value.filter((favoriteId) => favoriteId !== id)
-    : [...favorites.value, id];
-}
 </script>
 
 <template>
@@ -30,9 +24,9 @@ function toggleFavorite(id: number) {
     <section id="top" class="hero">
       <div class="hero-copy">
         <div class="eyebrow"><span /> YOUR NEXT LOADOUT STARTS HERE</div>
-        <h1>Looks that<br />hit <em>different.</em></h1>
+        <h1>Looks that<br >hit <em>different.</em></h1>
         <p class="hero-description">
-          The skins you want. The prices you don't expect.<br class="desktop-break" />
+          The skins you want. The prices you don't expect.<br class="desktop-break" >
           Upgrade your game without the grind.
         </p>
         <div class="hero-actions">
@@ -66,7 +60,7 @@ function toggleFavorite(id: number) {
           width="960"
           height="663"
           fetchpriority="high"
-        />
+        >
         <img
           class="hero-floating hero-controller"
           src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Xbox-360-Controller-Black.png/960px-Xbox-360-Controller-Black.png"
@@ -75,7 +69,7 @@ function toggleFavorite(id: number) {
           width="960"
           height="726"
           loading="lazy"
-        />
+        >
         <img
           class="hero-floating hero-keyboard"
           src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Sega-Dreamcast-Keyboard.png/960px-Sega-Dreamcast-Keyboard.png"
@@ -84,10 +78,10 @@ function toggleFavorite(id: number) {
           width="960"
           height="454"
           loading="lazy"
-        />
+        >
         <div class="hero-index">COLLECTION 01 <span>—</span> 2025</div>
         <div class="drop-card">
-          <span class="drop-card-label">FEATURED DROP</span><strong>NEON<br />AFTERHOURS</strong
+          <span class="drop-card-label">FEATURED DROP</span><strong>NEON<br >AFTERHOURS</strong
           ><span class="drop-card-bottom">LIMITED SERIES <i>↗</i></span>
         </div>
         <div class="hero-art-caption">
@@ -194,7 +188,7 @@ function toggleFavorite(id: number) {
       <div class="banner-pattern" />
       <div class="banner-copy">
         <span class="banner-kicker">DON'T JUST PLAY. ARRIVE.</span>
-        <h2>Your next main<br />character energy.</h2>
+        <h2>Your next main<br >character energy.</h2>
       </div>
       <NuxtLink class="button-dark" to="/shop">Find your skin <span>↗</span></NuxtLink>
       <span class="banner-star">✳</span>
