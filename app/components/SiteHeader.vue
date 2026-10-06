@@ -80,14 +80,20 @@ async function searchShop() {
           <circle cx="11" cy="11" r="6.5" />
           <path d="m16 16 4 4" />
         </svg>
-        <input v-model="searchQuery" aria-label="Search skins" placeholder="Search skins..." >
+        <Input v-model="searchQuery" aria-label="Search skins" placeholder="Search skins..." />
         <kbd>/</kbd>
       </form>
-      <NuxtLink v-if="!account.isAuthenticated.value" class="header-account" to="/login"
-        >Sign in</NuxtLink
+      <Button
+        v-if="!account.isAuthenticated.value"
+        variant="ghost"
+        class="header-account"
+        to="/login"
+        >Sign in</Button
       >
       <div v-else ref="profileArea" class="header-profile-area">
-        <button
+        <Button
+          variant="ghost"
+          size="sm"
           class="header-profile-trigger"
           type="button"
           :aria-expanded="profileMenuOpen"
@@ -102,7 +108,7 @@ async function searchShop() {
             >
           </span>
           <span class="header-profile-chevron" aria-hidden="true">⌄</span>
-        </button>
+        </Button>
         <Transition name="profile-menu">
           <nav
             v-if="profileMenuOpen"
@@ -141,19 +147,23 @@ async function searchShop() {
             <NuxtLink to="/account/settings" role="menuitem" @click="profileMenuOpen = false"
               >Settings <span>↗</span></NuxtLink
             >
-            <button type="button" role="menuitem" @click="logOut">Log out <span>↗</span></button>
+            <Button variant="danger" size="sm" type="button" role="menuitem" @click="logOut"
+              >Log out <span>↗</span></Button
+            >
           </nav>
         </Transition>
       </div>
-      <NuxtLink class="cart-button" to="/cart" aria-label="Shopping cart">
+      <Button variant="ghost" class="cart-button" to="/cart" aria-label="Shopping cart">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M3 4h2l2.1 10.1a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 1.9-1.4L21 8H6" />
           <circle cx="10" cy="20" r="1" />
           <circle cx="18" cy="20" r="1" />
         </svg>
         <span>Cart</span><b>{{ count }}</b>
-      </NuxtLink>
-      <button
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
         class="mobile-menu-toggle"
         type="button"
         :aria-expanded="mobileMenuOpen"
@@ -167,7 +177,7 @@ async function searchShop() {
         <svg v-else viewBox="0 0 24 24" aria-hidden="true">
           <path d="m6 6 12 12M18 6 6 18" />
         </svg>
-      </button>
+      </Button>
     </div>
     <div v-show="mobileMenuOpen" id="mobile-menu" class="mobile-menu-panel">
       <nav class="mobile-nav" aria-label="Mobile navigation">
@@ -188,13 +198,13 @@ async function searchShop() {
           <circle cx="11" cy="11" r="6.5" />
           <path d="m16 16 4 4" />
         </svg>
-        <input
+        <Input
           v-model="searchQuery"
           type="search"
           aria-label="Search skins"
           placeholder="Search skins..."
-        >
-        <button type="submit" aria-label="Search">↗</button>
+        />
+        <Button variant="ghost" size="icon" type="submit" aria-label="Search">↗</Button>
       </form>
     </div>
   </header>

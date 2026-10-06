@@ -9,9 +9,10 @@ interface Props {
   rows?: number;
   size?: TextareaSize;
   resize?: boolean;
+  modelModifiers?: { trim?: boolean };
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   modelValue: '',
   placeholder: '',
   disabled: false,
@@ -19,6 +20,7 @@ withDefaults(defineProps<Props>(), {
   rows: 4,
   size: 'md',
   resize: true,
+  modelModifiers: () => ({}),
 });
 
 const emit = defineEmits<{
@@ -28,7 +30,7 @@ const emit = defineEmits<{
 const handleInput = (event: Event) => {
   const target = event.target as HTMLTextAreaElement;
 
-  emit('update:modelValue', target.value);
+  emit('update:modelValue', props.modelModifiers.trim ? target.value.trim() : target.value);
 };
 </script>
 
@@ -39,7 +41,7 @@ const handleInput = (event: Event) => {
     :disabled="disabled"
     :rows="rows"
     :class="[
-      'w-full rounded-md border border-border bg-[#171b17] text-foreground',
+      'w-full rounded-sm border border-border bg-surface text-foreground',
       'placeholder:text-muted/75',
       'outline-none',
       'transition-[border-color,box-shadow,background-color] duration-200',
@@ -47,7 +49,6 @@ const handleInput = (event: Event) => {
       'focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20',
 
       {
-        'border-primary focus-visible:border-primary focus-visible:ring-primary/20': !error,
         'border-red-400 focus-visible:border-red-400 focus-visible:ring-red-400/20': error,
         'resize-y': resize,
         'resize-none': !resize,

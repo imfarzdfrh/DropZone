@@ -8,15 +8,17 @@ interface Props {
   disabled?: boolean;
   error?: boolean;
   size?: InputSize;
+  modelModifiers?: { trim?: boolean };
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   modelValue: '',
   type: 'text',
   placeholder: '',
   disabled: false,
   error: false,
   size: 'md',
+  modelModifiers: () => ({}),
 });
 
 const emit = defineEmits<{
@@ -26,18 +28,27 @@ const emit = defineEmits<{
 const handleInput = (event: Event) => {
   const target = event.target as HTMLInputElement;
 
-  emit('update:modelValue', target.value);
+  if (props.type !== 'file')
+    emit('update:modelValue', props.modelModifiers.trim ? target.value.trim() : target.value);
 };
+const element = ref<HTMLInputElement | null>(null);
+defineExpose({
+  click: () => element.value?.click(),
+  clear: () => {
+    if (element.value) element.value.value = '';
+  },
+});
 </script>
 
 <template>
   <input
-    :value="modelValue"
+    ref="element"
+    :value="type === 'file' ? undefined : modelValue"
     :type="type"
     :placeholder="placeholder"
     :disabled="disabled"
     :class="[
-      'w-full rounded-md border border-border bg-[#171b17] text-foreground',
+      'w-full rounded-sm border border-border bg-surface text-foreground',
       'placeholder:text-muted/75',
       'transition-[border-color,box-shadow,background-color] duration-200',
       'outline-none',
@@ -45,7 +56,6 @@ const handleInput = (event: Event) => {
       'focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20',
 
       {
-        'border-primary focus-visible:border-primary focus-visible:ring-primary/20': !error,
         'border-red-400 focus-visible:border-red-400 focus-visible:ring-red-400/20': error,
       },
 

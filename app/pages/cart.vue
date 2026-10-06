@@ -66,26 +66,34 @@ function beginCheckout() {
               </div>
             </div>
             <div class="quantity-control">
-              <button
+              <Button
+                variant="outline"
+                size="icon"
                 :aria-label="`Remove one ${line.name}`"
                 @click="cart.setQuantity(line.id, line.quantity - 1)"
               >
                 −
-              </button>
+              </Button>
               <span>{{ line.quantity }}</span>
-              <button
+              <Button
+                variant="outline"
+                size="icon"
                 :aria-label="`Add one ${line.name}`"
                 @click="cart.setQuantity(line.id, line.quantity + 1)"
               >
                 +
-              </button>
+              </Button>
             </div>
             <div class="cart-line-price">
               <strong>${{ (line.price * line.quantity).toFixed(2) }}</strong
-              ><button @click="cart.removeFromCart(line.id)">Remove</button>
+              ><Button variant="danger" size="sm" @click="cart.removeFromCart(line.id)"
+                >Remove</Button
+              >
             </div>
           </article>
-          <NuxtLink class="continue-shopping" to="/shop"><span>←</span> Keep browsing</NuxtLink>
+          <Button variant="ghost" class="continue-shopping" to="/shop"
+            ><span>←</span> Keep browsing</Button
+          >
         </div>
 
         <aside class="order-summary">
@@ -100,9 +108,9 @@ function beginCheckout() {
             <span>Digital delivery</span><strong class="included">INCLUDED</strong>
           </div>
           <div v-if="account.user.value" class="cart-wallet-option">
-            <label
-              ><input v-model="useWalletFunds" type="checkbox" ><span>Use wallet funds</span
-              ><strong>${{ account.user.value.walletBalance.toFixed(2) }} available</strong></label
+            <Label
+              ><Checkbox v-model="useWalletFunds" /><span>Use wallet funds</span
+              ><strong>${{ account.user.value.walletBalance.toFixed(2) }} available</strong></Label
             >
             <div v-if="useWalletFunds" class="cart-wallet-breakdown">
               <span>Wallet contribution</span><strong>−${{ walletContribution.toFixed(2) }}</strong>
@@ -111,8 +119,8 @@ function beginCheckout() {
             </div>
             <small>Preview only. Funds are not deducted until secure checkout is connected.</small>
           </div>
-          <NuxtLink v-else class="cart-wallet-signin" to="/login"
-            >Sign in to use wallet funds <span>↗</span></NuxtLink
+          <Button v-else variant="ghost" class="cart-wallet-signin" to="/login"
+            >Sign in to use wallet funds <span>↗</span></Button
           >
           <div class="summary-total">
             <span>{{ useWalletFunds ? 'Remaining due' : 'Estimated total' }}</span
@@ -122,9 +130,9 @@ function beginCheckout() {
               }}</strong
             >
           </div>
-          <button class="checkout-button" @click="beginCheckout">
+          <Button variant="primary" size="lg" class="checkout-button" @click="beginCheckout">
             Continue to checkout <span>↗</span>
-          </button>
+          </Button>
           <p v-if="checkoutMessage" class="checkout-message" role="status">{{ checkoutMessage }}</p>
           <p class="secure-note"><span>◈</span> Your order details stay private.</p>
         </aside>
@@ -134,7 +142,9 @@ function beginCheckout() {
         <span class="eyebrow"><span /> NOTHING IN THE DROP ZONE</span>
         <h2>Your cart is taking a breather.</h2>
         <p>There are plenty of good looks still waiting to be found.</p>
-        <NuxtLink class="button-primary" to="/shop">Explore the shop <span>↗</span></NuxtLink>
+        <Button variant="primary" class="button-primary" to="/shop"
+          >Explore the shop <span>↗</span></Button
+        >
       </div>
     </section>
     <SiteFooter />

@@ -11,21 +11,21 @@ defineProps<{
 
 <template>
   <AccountShell>
-    <section class="account-panel account-placeholder-panel">
-      <div class="account-section-heading">
+    <Card as="section" class="account-panel account-placeholder-panel">
+      <CardHeader class="account-section-heading">
         <div>
           <span class="account-overline">{{ overline }}</span>
           <h2>{{ title }}</h2>
         </div>
         <span v-if="count" class="transaction-count">{{ count }}</span>
-      </div>
+      </CardHeader>
       <p>{{ description }}</p>
-      <NuxtLink class="account-placeholder-link" :to="actionTo"
-        >{{ actionLabel }} <span>↗</span></NuxtLink
+      <Button variant="ghost" class="account-placeholder-link" :to="actionTo"
+        >{{ actionLabel }} <span>↗</span></Button
       >
       <span class="account-placeholder-note"
         >DEMO ACCOUNT · CONNECTED DATA IS NOT AVAILABLE YET</span
       >
-    </section>
+    </Card>
   </AccountShell>
 </template>

@@ -42,55 +42,58 @@ useSeoMeta({
 <template>
   <AccountShell>
     <div class="wallet-page-content">
-      <section class="wallet-card">
-        <div class="wallet-card-top">
+      <Card as="section" class="wallet-card">
+        <Card as="div" class="wallet-card-top">
           <span class="wallet-symbol" aria-hidden="true">◈</span
           ><span>DROPZONE WALLET <i>DEMO</i></span>
-        </div>
+        </Card>
         <span class="wallet-label">AVAILABLE BALANCE</span>
         <strong class="wallet-amount">${{ account.user.value?.walletBalance.toFixed(2) }}</strong>
-        <div class="wallet-card-bottom">
+        <Card as="div" class="wallet-card-bottom">
           <span>PLAYER FUNDS</span><span>•••• &nbsp; •••• &nbsp; •••• &nbsp; 2048</span>
-        </div>
+        </Card>
         <span class="wallet-card-grid" aria-hidden="true" />
-      </section>
+      </Card>
 
-      <section class="account-panel add-funds-panel">
-        <div class="account-section-heading">
+      <Card as="section" class="account-panel add-funds-panel">
+        <CardHeader class="account-section-heading">
           <div>
             <span class="account-overline">LOAD YOUR WALLET</span>
             <h2>Add funds</h2>
-            <p>Choose an amount to begin a demo payment request.</p>
+            <CardDescription>Choose an amount to begin a demo payment request.</CardDescription>
           </div>
-        </div>
+        </CardHeader>
         <div v-if="step === 'amount'" class="funds-step">
           <div class="fund-amount-options" role="group" aria-label="Choose deposit amount">
-            <button
+            <Button
               v-for="value in [5, 10, 25, 50]"
               :key="value"
+              variant="outline"
+              size="sm"
               type="button"
               :class="{ 'fund-amount-active': !customAmount && amount === value }"
+              :aria-pressed="!customAmount && amount === value"
               @click="
                 amount = value;
                 customAmount = '';
               "
             >
               ${{ value }}
-            </button>
+            </Button>
           </div>
-          <label class="account-field"
+          <Label class="account-field"
             ><span>Custom amount <small>$5 minimum · $500 maximum</small></span
             ><span class="currency-input"
               ><i>$</i
-              ><input
+              ><Input
                 v-model="customAmount"
                 type="number"
                 min="5"
                 max="500"
                 step="0.01"
                 placeholder="Enter amount"
-                @input="amount = 0" ></span
-          ></label>
+                @input="amount = 0" /></span
+          ></Label>
           <Button type="button" @click="continueToPayment"
             >Continue to payment <span aria-hidden="true">↗</span></Button
           >
@@ -105,8 +108,14 @@ useSeoMeta({
             </p>
           </div>
           <div class="payment-step-actions">
-            <button class="account-text-button" type="button" @click="step = 'amount'">
-              ← Change amount</button
+            <Button
+              variant="ghost"
+              size="sm"
+              class="account-text-button"
+              type="button"
+              @click="step = 'amount'"
+            >
+              ← Change amount</Button
             ><Button type="button" variant="secondary" @click="recordPendingRequest"
               >Record pending request</Button
             >
@@ -117,16 +126,16 @@ useSeoMeta({
           No real payments are processed. Your balance changes only after future server-side payment
           confirmation.
         </p>
-      </section>
+      </Card>
 
-      <section class="account-panel transaction-panel">
-        <div class="account-section-heading">
+      <Card as="section" class="account-panel transaction-panel">
+        <CardHeader class="account-section-heading">
           <div>
             <span class="account-overline">WALLET ACTIVITY</span>
             <h2>Transactions</h2>
           </div>
           <span class="transaction-count">{{ account.transactions.value.length }} RECORDS</span>
-        </div>
+        </CardHeader>
         <div v-if="account.transactions.value.length" class="transaction-list">
           <article
             v-for="transaction in account.transactions.value"
@@ -160,7 +169,7 @@ useSeoMeta({
           <span>◈</span>
           <p>No wallet activity yet.</p>
         </div>
-      </section>
+      </Card>
     </div>
   </AccountShell>
 </template>

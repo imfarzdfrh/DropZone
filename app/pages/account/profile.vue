@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const account = useAccount();
 const user = computed(() => account.user.value);
-const fileInput = ref<HTMLInputElement | null>(null);
+const fileInput = ref<{ click: () => void; clear: () => void } | null>(null);
 const selectedFile = ref<File | null>(null);
 const preview = ref('');
 const removeCurrentAvatar = ref(false);
@@ -56,7 +56,7 @@ function clearAvatarSelection() {
   selectedFile.value = null;
   if (preview.value) URL.revokeObjectURL(preview.value);
   preview.value = '';
-  if (fileInput.value) fileInput.value.value = '';
+  fileInput.value?.clear();
   removeCurrentAvatar.value = true;
 }
 
@@ -99,14 +99,14 @@ useSeoMeta({
 
 <template>
   <AccountShell>
-    <section class="account-panel profile-edit-panel">
-      <div class="account-section-heading">
+    <Card as="section" class="account-panel profile-edit-panel">
+      <CardHeader class="account-section-heading">
         <div>
           <span class="account-overline">YOUR PLAYER CARD</span>
           <h2>Edit profile</h2>
-          <p>Keep your player details current.</p>
+          <CardDescription>Keep your player details current.</CardDescription>
         </div>
-      </div>
+      </CardHeader>
       <form class="profile-edit-form" @submit.prevent="saveProfile">
         <div class="profile-avatar-editor">
           <div class="profile-avatar-preview">
@@ -122,60 +122,73 @@ useSeoMeta({
             <strong>Profile picture</strong>
             <p>JPG, PNG, or WebP · up to 5 MB · 64–4096 px</p>
             <div class="avatar-edit-actions">
-              <button type="button" class="account-small-button" @click="fileInput?.click()">
-                Choose image</button
-              ><button
+              <Button
+                variant="secondary"
+                size="sm"
+                type="button"
+                class="account-small-button"
+                @click="fileInput?.click()"
+              >
+                Choose image</Button
+              ><Button
                 v-if="user?.avatar || preview"
+                variant="danger"
+                size="sm"
                 type="button"
                 class="account-text-button"
                 @click="clearAvatarSelection"
               >
                 Remove
-              </button>
+              </Button>
             </div>
           </div>
-          <input
+          <Input
             ref="fileInput"
             class="sr-only"
             type="file"
             accept="image/jpeg,image/png,image/webp"
             @change="selectAvatar"
-          >
+          />
         </div>
         <div class="profile-form-grid">
-          <label class="account-field account-field-wide"
-            ><span>Username</span
-            ><input
+          <FormField class="account-field account-field-wide" label="Username" input-id="profile-1"
+            ><Input
+              id="profile-1"
               v-model.trim="fields.username"
               autocomplete="username"
               required
               minlength="3"
               maxlength="20"
-          ></label>
-          <label class="account-field"
-            ><span>First name</span
-            ><input v-model.trim="fields.firstName" autocomplete="given-name"
-          ></label>
-          <label class="account-field"
-            ><span>Last name</span><input v-model.trim="fields.lastName" autocomplete="family-name"
-          ></label>
-          <label class="account-field account-field-wide"
-            ><span>Email address</span
-            ><input v-model.trim="fields.email" type="email" autocomplete="email" required
-          ></label>
-          <label class="account-field"
-            ><span>Phone number <small>Optional</small></span
-            ><input v-model.trim="fields.phone" type="tel" autocomplete="tel"
-          ></label>
-          <label class="account-field account-field-wide"
-            ><span>About me <small>Optional</small></span
-            ><textarea
+          /></FormField>
+          <FormField class="account-field" label="First name" input-id="profile-2"
+            ><Input id="profile-2" v-model.trim="fields.firstName" autocomplete="given-name"
+          /></FormField>
+          <FormField class="account-field" label="Last name" input-id="profile-3"
+            ><Input id="profile-3" v-model.trim="fields.lastName" autocomplete="family-name"
+          /></FormField>
+          <FormField
+            class="account-field account-field-wide"
+            label="Email address"
+            input-id="profile-4"
+            ><Input
+              id="profile-4"
+              v-model.trim="fields.email"
+              type="email"
+              autocomplete="email"
+              required
+          /></FormField>
+          <FormField class="account-field" label="Phone number" input-id="profile-5"
+            ><Input id="profile-5" v-model.trim="fields.phone" type="tel" autocomplete="tel"
+          /></FormField>
+          <FormField class="account-field account-field-wide" label="About me" input-id="profile-6"
+            ><Textarea
+              id="profile-6"
               v-model.trim="fields.bio"
               maxlength="240"
-              rows="3"
+              :rows="3"
               placeholder="What do you play? What is your main?"
             />
-          </label>
+          </FormField>
         </div>
         <p v-if="successMessage" class="account-form-message account-success" role="status">
           {{ successMessage }}
@@ -183,14 +196,14 @@ useSeoMeta({
         <p v-if="errorMessage" class="account-form-message account-error" role="alert">
           {{ errorMessage }}
         </p>
-        <div class="profile-form-footer">
+        <CardFooter class="profile-form-footer">
           <span
             >Account created {{ user ? new Date(user.createdAt).toLocaleDateString() : '' }}</span
           ><Button type="submit" :loading="saving"
             >Save changes <span aria-hidden="true">↗</span></Button
           >
-        </div>
+        </CardFooter>
       </form>
-    </section>
+    </Card>
   </AccountShell>
 </template>

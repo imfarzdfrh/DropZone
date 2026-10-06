@@ -11,7 +11,7 @@ useSeoMeta({
 <template>
   <AccountShell>
     <div v-if="user" class="account-overview">
-      <section class="account-welcome account-panel">
+      <Card as="section" class="account-welcome account-panel">
         <div class="account-welcome-profile">
           <UserAvatar
             :avatar="user.avatar"
@@ -32,36 +32,36 @@ useSeoMeta({
             </p>
           </div>
         </div>
-        <NuxtLink class="account-edit-link" to="/account/profile"
-          >Edit profile <span>↗</span></NuxtLink
+        <Button variant="ghost" class="account-edit-link" to="/account/profile"
+          >Edit profile <span>↗</span></Button
         >
-      </section>
+      </Card>
 
       <section class="account-stat-grid" aria-label="Account statistics">
-        <article class="account-stat">
+        <Card as="article" class="account-stat">
           <span>WALLET BALANCE</span><strong>${{ user.walletBalance.toFixed(2) }}</strong
           ><NuxtLink to="/account/wallet">View wallet ↗</NuxtLink>
-        </article>
-        <article class="account-stat">
+        </Card>
+        <Card as="article" class="account-stat">
           <span>ORDERS</span
           ><strong>{{ account.orderCount.value.toString().padStart(2, '0') }}</strong
           ><NuxtLink to="/account/orders">Order history ↗</NuxtLink>
-        </article>
-        <article class="account-stat">
+        </Card>
+        <Card as="article" class="account-stat">
           <span>WISHLIST</span
           ><strong>{{ account.wishlistCount.value.toString().padStart(2, '0') }}</strong
           ><NuxtLink to="/account/wishlist">Saved items ↗</NuxtLink>
-        </article>
+        </Card>
       </section>
 
-      <section class="account-panel account-info-panel">
-        <div class="account-section-heading">
+      <Card as="section" class="account-panel account-info-panel">
+        <CardHeader class="account-section-heading">
           <div>
             <span class="account-overline">ACCOUNT DETAILS</span>
             <h2>Player information</h2>
           </div>
           <NuxtLink to="/account/profile">Edit details ↗</NuxtLink>
-        </div>
+        </CardHeader>
         <dl class="profile-details">
           <div>
             <dt>Username</dt>
@@ -84,7 +84,7 @@ useSeoMeta({
             <dd>{{ user.bio || 'Add a little about yourself to your profile.' }}</dd>
           </div>
         </dl>
-      </section>
+      </Card>
       <p class="account-demo-disclaimer">
         DEMO ACCOUNT
         <span

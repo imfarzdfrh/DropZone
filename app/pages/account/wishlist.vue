@@ -8,13 +8,13 @@ useSeoMeta({ title: 'Wishlist | Dropzone', description: 'Your saved Dropzone ite
 
 <template>
   <AccountShell>
-    <section class="account-panel">
-      <div class="account-section-heading">
+    <Card as="section" class="account-panel">
+      <CardHeader class="account-section-heading">
         <div>
           <h2>Your wishlist</h2>
           <p>Items saved in this browser.</p>
         </div>
-      </div>
+      </CardHeader>
       <article v-for="skin in savedItems" :key="skin.id" class="transaction-row">
         <div class="transaction-description">
           <strong>{{ skin.name }}</strong
@@ -32,6 +32,6 @@ useSeoMeta({ title: 'Wishlist | Dropzone', description: 'Your saved Dropzone ite
       <p v-if="!savedItems.length">
         No saved items yet. <NuxtLink to="/shop">Explore the shop ↗</NuxtLink>
       </p>
-    </section>
+    </Card>
   </AccountShell>
 </template>

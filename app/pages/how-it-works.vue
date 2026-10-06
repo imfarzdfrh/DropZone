@@ -30,7 +30,9 @@ const steps = [
       <span class="eyebrow"><span /> EASY IN. BACK IN GAME.</span>
       <h1>From drop to<br ><em>drop-in.</em></h1>
       <p>Good skins should be the easy part. Here’s how getting yours works.</p>
-      <NuxtLink class="button-primary" to="/shop">Browse the collection <span>↗</span></NuxtLink>
+      <Button variant="primary" class="button-primary" to="/shop"
+        >Browse the collection <span>↗</span></Button
+      >
       <span class="process-orbit orbit-one">01</span><span class="process-orbit orbit-two">03</span>
     </section>
 

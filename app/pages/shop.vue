@@ -58,29 +58,37 @@ const visibleSkins = computed(() => {
     <section class="catalog-section">
       <div class="catalog-toolbar">
         <div class="catalog-categories" aria-label="Filter skins by category">
-          <button
+          <Button
             v-for="category in categories"
             :key="category"
+            variant="ghost"
+            size="sm"
             :class="['category-button', { 'category-active': activeCategory === category }]"
+            :aria-pressed="activeCategory === category"
             @click="activeCategory = category"
           >
             {{ category }}
-          </button>
+          </Button>
         </div>
         <div class="catalog-controls">
-          <label class="catalog-search">
+          <Label class="catalog-search">
             <span class="sr-only">Search products</span>
-            <input v-model="searchQuery" type="search" placeholder="Search the collection" >
+            <Input v-model="searchQuery" type="search" placeholder="Search the collection" />
             <span aria-hidden="true">⌕</span>
-          </label>
-          <label class="sort-control">
+          </Label>
+          <Label class="sort-control">
             <span>SORT</span>
-            <select v-model="sortBy" aria-label="Sort products">
-              <option value="featured">Featured</option>
-              <option value="price-low">Price: low to high</option>
-              <option value="price-high">Price: high to low</option>
-            </select>
-          </label>
+            <Select
+              v-model="sortBy"
+              aria-label="Sort products"
+              placeholder=""
+              :options="[
+                { label: 'Featured', value: 'featured' },
+                { label: 'Price: low to high', value: 'price-low' },
+                { label: 'Price: high to low', value: 'price-high' },
+              ]"
+            />
+          </Label>
         </div>
       </div>
       <div class="catalog-meta">
@@ -88,9 +96,10 @@ const visibleSkins = computed(() => {
       </div>
 
       <div v-if="visibleSkins.length" class="product-grid catalog-grid">
-        <article
+        <Card
           v-for="(skin, index) in visibleSkins"
           :key="skin.id"
+          as="article"
           class="product-card"
           :style="{ '--card-delay': `${index * 60}ms` }"
         >
@@ -101,11 +110,14 @@ const visibleSkins = computed(() => {
             }"
           >
             <span class="product-label">{{ skin.label }}</span>
-            <button
+            <Button
+              variant="ghost"
+              size="icon"
               :class="['favorite-button', { 'is-favorite': favorites.includes(skin.id) }]"
               :aria-label="
                 favorites.includes(skin.id) ? 'Remove from favorites' : 'Add to favorites'
               "
+              :aria-pressed="favorites.includes(skin.id)"
               @click="toggleFavorite(skin.id)"
             >
               <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -113,12 +125,12 @@ const visibleSkins = computed(() => {
                   d="M20.8 8.8c0 4.1-8.8 10-8.8 10s-8.8-5.9-8.8-10a4.8 4.8 0 0 1 8.8-2.6 4.8 4.8 0 0 1 8.8 2.6Z"
                 />
               </svg>
-            </button>
+            </Button>
             <span class="product-game">{{ skin.game }} <span>•</span> {{ skin.category }}</span>
           </div>
-          <div class="product-info">
+          <CardContent class="product-info">
             <div>
-              <h3>{{ skin.name }}</h3>
+              <CardTitle>{{ skin.name }}</CardTitle>
               <span class="product-condition">DIGITAL ITEM <i>·</i> IN STOCK</span>
             </div>
             <div class="product-buy">
@@ -126,16 +138,18 @@ const visibleSkins = computed(() => {
                 <strong>${{ skin.price.toFixed(2) }}</strong
                 ><del v-if="skin.oldPrice">${{ skin.oldPrice.toFixed(2) }}</del>
               </div>
-              <button
+              <Button
+                variant="outline"
+                size="icon"
                 class="add-button"
                 :aria-label="`Add ${skin.name} to cart`"
                 @click="addToCart(skin.id)"
               >
                 +
-              </button>
+              </Button>
             </div>
-          </div>
-        </article>
+          </CardContent>
+        </Card>
       </div>
       <div v-else class="empty-state">
         Nothing in this drop matches that search. Try a different filter.

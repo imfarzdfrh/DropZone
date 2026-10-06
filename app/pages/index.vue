@@ -24,13 +24,15 @@ const filteredSkins = computed(() => {
     <section id="top" class="hero">
       <div class="hero-copy">
         <div class="eyebrow"><span /> YOUR NEXT LOADOUT STARTS HERE</div>
-        <h1>Looks that<br >hit <em>different.</em></h1>
+        <h1>NEXT ROUND.<br >NEW <em>LOADOUT.</em></h1>
         <p class="hero-description">
-          The skins you want. The prices you don't expect.<br class="desktop-break" >
-          Upgrade your game without the grind.
+          Precision. Style. A loadout that feels like you.<br class="desktop-break" >
+          Inspired by Counter-Strike. Built for your next clutch.
         </p>
         <div class="hero-actions">
-          <NuxtLink class="button-primary" to="/shop">Explore the drop <span>↗</span></NuxtLink>
+          <Button variant="primary" class="button-primary" to="/shop"
+            >Explore the drop <span>↗</span></Button
+          >
           <div class="social-proof">
             <div class="avatar-stack"><i>J</i><i>M</i><i>K</i></div>
             <span><strong>2.4k+</strong> players geared up</span>
@@ -51,42 +53,18 @@ const filteredSkins = computed(() => {
           </div>
         </div>
       </div>
-      <div class="hero-art" role="group" aria-label="Featured gaming gear">
-        <div class="hero-art-shade" />
-        <img
-          class="hero-headset"
-          src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Oculus-Rift-CV1-Headset-Front_with_transparent_background.png/960px-Oculus-Rift-CV1-Headset-Front_with_transparent_background.png"
-          alt="Black virtual reality gaming headset"
-          width="960"
-          height="663"
-          fetchpriority="high"
-        >
-        <img
-          class="hero-floating hero-controller"
-          src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Xbox-360-Controller-Black.png/960px-Xbox-360-Controller-Black.png"
-          alt=""
-          aria-hidden="true"
-          width="960"
-          height="726"
-          loading="lazy"
-        >
-        <img
-          class="hero-floating hero-keyboard"
-          src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Sega-Dreamcast-Keyboard.png/960px-Sega-Dreamcast-Keyboard.png"
-          alt=""
-          aria-hidden="true"
-          width="960"
-          height="454"
-          loading="lazy"
-        >
-        <div class="hero-index">COLLECTION 01 <span>—</span> 2025</div>
-        <div class="drop-card">
-          <span class="drop-card-label">FEATURED DROP</span><strong>NEON<br >AFTERHOURS</strong
-          ><span class="drop-card-bottom">LIMITED SERIES <i>↗</i></span>
+      <div
+        class="hero-art tactical-art"
+        role="img"
+        aria-label="CS2-inspired tactical loadout graphic"
+      >
+        <div class="tactical-crosshair" aria-hidden="true" />
+        <div class="hero-index">DROPZONE <span>/</span> LOADOUT DIVISION</div>
+        <div class="tactical-emblem">
+          <strong>CS2</strong><span>COUNTER-STRIKE / NEXT ROUND</span>
         </div>
-        <div class="hero-art-caption">
-          <span class="live-dot" /> LIVE NOW <span class="caption-divider">/</span> 08 ITEMS
-        </div>
+        <div class="hero-art-caption"><span class="live-dot" /> LOCK IN YOUR LOADOUT</div>
+        <span class="tactical-tag">READY / 01</span>
       </div>
       <div class="hero-bottom-line">
         <span>BUILT FOR YOUR NEXT CLUTCH</span><span>SCROLL TO EXPLORE <b>↓</b></span>
@@ -106,18 +84,21 @@ const filteredSkins = computed(() => {
           <div class="eyebrow shop-eyebrow"><span /> THE GOOD STUFF</div>
           <h2>Fresh from the <em>drop.</em></h2>
         </div>
-        <NuxtLink class="view-all" to="/shop">VIEW ALL SKINS <span>↗</span></NuxtLink>
+        <Button variant="ghost" class="view-all" to="/shop">VIEW ALL SKINS <span>↗</span></Button>
       </div>
       <div class="shop-toolbar">
         <div class="category-list" aria-label="Filter by category">
-          <button
+          <Button
             v-for="category in categories"
             :key="category"
+            variant="ghost"
+            size="sm"
             :class="['category-button', { 'category-active': activeCategory === category }]"
+            :aria-pressed="activeCategory === category"
             @click="activeCategory = category"
           >
             {{ category }}
-          </button>
+          </Button>
         </div>
         <span class="results-count"
           >SHOWING {{ filteredSkins.length.toString().padStart(2, '0') }} ITEMS</span
@@ -125,9 +106,10 @@ const filteredSkins = computed(() => {
       </div>
 
       <div v-if="filteredSkins.length" class="product-grid">
-        <article
+        <Card
           v-for="(skin, index) in filteredSkins"
           :key="skin.id"
+          as="article"
           class="product-card"
           :style="{ '--card-delay': `${index * 70}ms` }"
         >
@@ -138,11 +120,14 @@ const filteredSkins = computed(() => {
             }"
           >
             <span class="product-label">{{ skin.label }}</span>
-            <button
+            <Button
+              variant="ghost"
+              size="icon"
               :class="['favorite-button', { 'is-favorite': favorites.includes(skin.id) }]"
               :aria-label="
                 favorites.includes(skin.id) ? 'Remove from favorites' : 'Add to favorites'
               "
+              :aria-pressed="favorites.includes(skin.id)"
               @click="toggleFavorite(skin.id)"
             >
               <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -150,12 +135,12 @@ const filteredSkins = computed(() => {
                   d="M20.8 8.8c0 4.1-8.8 10-8.8 10s-8.8-5.9-8.8-10a4.8 4.8 0 0 1 8.8-2.6 4.8 4.8 0 0 1 8.8 2.6Z"
                 />
               </svg>
-            </button>
+            </Button>
             <span class="product-game">{{ skin.game }} <span>•</span> {{ skin.category }}</span>
           </div>
-          <div class="product-info">
+          <CardContent class="product-info">
             <div>
-              <h3>{{ skin.name }}</h3>
+              <CardTitle>{{ skin.name }}</CardTitle>
               <span class="product-condition">DIGITAL ITEM <i>·</i> IN STOCK</span>
             </div>
             <div class="product-buy">
@@ -163,16 +148,18 @@ const filteredSkins = computed(() => {
                 <strong>${{ skin.price.toFixed(2) }}</strong
                 ><del v-if="skin.oldPrice">${{ skin.oldPrice.toFixed(2) }}</del>
               </div>
-              <button
+              <Button
+                variant="outline"
+                size="icon"
                 class="add-button"
                 :aria-label="`Add ${skin.name} to cart`"
                 @click="addToCart(skin.id)"
               >
                 +
-              </button>
+              </Button>
             </div>
-          </div>
-        </article>
+          </CardContent>
+        </Card>
       </div>
       <div v-else class="empty-state">
         No skins match that search. Try another name or category.
@@ -188,9 +175,11 @@ const filteredSkins = computed(() => {
       <div class="banner-pattern" />
       <div class="banner-copy">
         <span class="banner-kicker">DON'T JUST PLAY. ARRIVE.</span>
-        <h2>Your next main<br >character energy.</h2>
+        <h2>GEAR UP.<br >GO FOR THE CLUTCH.</h2>
       </div>
-      <NuxtLink class="button-dark" to="/shop">Find your skin <span>↗</span></NuxtLink>
+      <Button variant="secondary" class="button-dark" to="/shop"
+        >Find your skin <span>↗</span></Button
+      >
       <span class="banner-star">✳</span>
     </section>
 

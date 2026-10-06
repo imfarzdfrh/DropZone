@@ -102,32 +102,36 @@ async function handleSubmit(event: SubmitEvent) {
                 :minlength="isLogin ? undefined : 8"
                 required
               />
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 class="auth-password-toggle"
                 type="button"
                 :aria-label="showPassword ? 'Hide password' : 'Show password'"
                 @click="showPassword = !showPassword"
               >
                 {{ showPassword ? 'Hide' : 'Show' }}
-              </button>
+              </Button>
             </span>
           </FormField>
 
           <div v-if="isLogin" class="auth-form-options">
-            <label class="auth-checkbox">
-              <input type="checkbox" name="remember" >
+            <Label class="auth-checkbox">
+              <Checkbox name="remember" />
               <span>Keep me signed in</span>
-            </label>
-            <a
-              href="#forgot-password"
+            </Label>
+            <Button
+              variant="ghost"
+              size="sm"
+              class="auth-forgot-password"
               @click.prevent="statusMessage = 'Password recovery is not connected yet.'"
-              >Forgot password?</a
+              >Forgot password?</Button
             >
           </div>
-          <label v-else class="auth-checkbox auth-terms">
-            <input type="checkbox" name="terms" required >
+          <Label v-else class="auth-checkbox auth-terms">
+            <Checkbox name="terms" required />
             <span>I agree to the Terms of Service and Privacy Policy.</span>
-          </label>
+          </Label>
 
           <Button class="auth-submit" type="submit" variant="primary" block>
             {{ isLogin ? 'Sign in' : 'Create account' }} <span aria-hidden="true">↗</span>
