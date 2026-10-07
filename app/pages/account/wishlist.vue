@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { skins } from '~/data/skins';
+import { products as skins } from '~/data/catalog';
 const { favorites, toggleFavorite } = useWishlist();
 const { addToCart } = useCart();
 const savedItems = computed(() => skins.filter((skin) => favorites.value.includes(skin.id)));

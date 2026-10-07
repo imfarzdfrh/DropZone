@@ -1,4 +1,4 @@
-import { skins } from '~/data/skins';
+import { products as skins } from '~/data/catalog';
 import { normalizeCart, validQuantity } from '~/utils/storeValidation';
 
 export function useCart() {

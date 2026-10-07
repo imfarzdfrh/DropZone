@@ -1,4 +1,4 @@
-import { skins } from '~/data/skins';
+import { products as skins } from '~/data/catalog';
 
 export function useWishlist() {
   const favorites = useState<number[]>('dropzone-wishlist', () => []);

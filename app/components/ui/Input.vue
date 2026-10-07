@@ -60,8 +60,8 @@ defineExpose({
       },
 
       {
-        'min-h-10 px-3 text-sm': size === 'sm',
-        'min-h-11 px-4 text-sm': size === 'md',
+        'min-h-11 px-3 text-base': size === 'sm',
+        'min-h-11 px-4 text-base': size === 'md',
         'min-h-12 px-4 text-base': size === 'lg',
       },
     ]"

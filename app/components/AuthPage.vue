@@ -58,7 +58,7 @@ async function handleSubmit(event: SubmitEvent) {
           {{
             isLogin
               ? 'Your loadout is waiting. Sign in to pick up where you left off.'
-              : 'Get closer to the skins you came for. It only takes a minute.'
+              : 'Keep your games, gear and saved picks in one place. It only takes a minute.'
           }}
         </p>
 
@@ -149,7 +149,7 @@ async function handleSubmit(event: SubmitEvent) {
       </div>
 
       <footer class="auth-footer">
-        <span>© 2025 DROPZONE</span><span>PLAY ON YOUR TERMS.</span>
+        <span>© {{ new Date().getFullYear() }} DROPZONE</span><span>PLAY ON YOUR TERMS.</span>
       </footer>
     </section>
   </main>

@@ -14,9 +14,13 @@
     "format:check": "prettier . --check",
     "test": "node --test tests/*.test.mjs",
     "typecheck": "nuxt typecheck",
-    "test:e2e": "node tests/browser-smoke.mjs"
+    "test:e2e": "node tests/browser-smoke.mjs",
+    "test:storefront": "node tests/storefront-browser.mjs"
   },
   "dependencies": {
+    "@fontsource-variable/dm-sans": "^5.3.0",
+    "@fontsource-variable/space-grotesk": "^5.3.0",
+    "@lucide/vue": "^1.52.0",
     "@tailwindcss/vite": "^4.3.3",
     "nuxt": "^4.5.2",
     "tailwindcss": "^4.3.3",

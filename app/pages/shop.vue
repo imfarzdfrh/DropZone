@@ -1,164 +1,193 @@
 <script setup lang="ts">
-import { categories, skins } from '~/data/skins';
-
+import { products } from '~/data/catalog';
+import { resolveCategory, categoryRoute } from '~/data/categories';
+import { filterProducts } from '~/utils/catalog';
 const route = useRoute();
-const categoryFromQuery = (value: unknown) =>
-  typeof value === 'string' && categories.includes(value) ? value : 'All skins';
-const activeCategory = ref(categoryFromQuery(route.query.category));
-const searchQuery = ref(String(route.query.search ?? ''));
-const sortBy = ref('featured');
-const { favorites, toggleFavorite } = useWishlist();
-const { addToCart } = useCart();
-
-watch(
-  () => route.query.category,
-  (category) => {
-    activeCategory.value = categoryFromQuery(category);
-  },
+const router = useRouter();
+const getQuery = (key: string) =>
+  typeof route.query[key] === 'string' ? (route.query[key] as string) : '';
+const selected = computed(() => resolveCategory(getQuery('category'), getQuery('subcategory')));
+const legacyCategory = computed(() =>
+  ['Rifles', 'Knives', 'Pistols', 'Gloves'].includes(getQuery('category'))
+    ? getQuery('category')
+    : '',
 );
-watch(
-  () => route.query.search,
-  (search) => {
-    searchQuery.value = String(search ?? '');
-  },
+const title = computed(
+  () =>
+    selected.value.subcategory?.label ||
+    selected.value.category?.label ||
+    legacyCategory.value ||
+    (getQuery('collection') === 'featured'
+      ? 'Featured products'
+      : getQuery('collection') === 'popular'
+        ? 'Bestsellers — demo selection'
+        : 'The gaming store'),
 );
-
-const visibleSkins = computed(() => {
-  const matchingSkins = skins.filter((skin) => {
-    const matchesCategory =
-      activeCategory.value === 'All skins' || skin.category === activeCategory.value;
-    const matchesSearch = `${skin.name} ${skin.game}`
-      .toLowerCase()
-      .includes(searchQuery.value.trim().toLowerCase());
-    return matchesCategory && matchesSearch;
+// Merge in-flight filter edits so quick consecutive selections cannot overwrite each other.
+let pendingFilters: Record<string, string | undefined> = {};
+let filterChange = 0;
+function update(key: string, value: string) {
+  pendingFilters[key] = value || undefined;
+  const change = ++filterChange;
+  void router
+    .replace({ path: '/shop', query: { ...route.query, ...pendingFilters } })
+    .finally(() => {
+      if (change === filterChange) pendingFilters = {};
+    });
+}
+const sortBy = computed({
+  get: () => getQuery('sort') || 'featured',
+  set: (value: string) => update('sort', value),
+});
+const kind = computed({
+  get: () => getQuery('kind'),
+  set: (value: string) => update('kind', value),
+});
+const platform = computed({
+  get: () => getQuery('platform'),
+  set: (value: string) => update('platform', value),
+});
+const budget = computed({
+  get: () => getQuery('budget'),
+  set: (value: string) => update('budget', value),
+});
+const visibleProducts = computed(() =>
+  filterProducts(products, {
+    category: selected.value.category?.id || legacyCategory.value,
+    subcategory: selected.value.subcategory?.id,
+    search: getQuery('search'),
+    kind: kind.value,
+    platform: platform.value,
+    budget: budget.value,
+    sort: sortBy.value,
+    collection: getQuery('collection'),
+  }),
+);
+const hasFilters = computed(
+  () => !!(getQuery('search') || kind.value || platform.value || budget.value),
+);
+function clearFilters() {
+  void router.replace({
+    path: '/shop',
+    query: { category: selected.value.category?.id, subcategory: selected.value.subcategory?.id },
   });
-
-  if (sortBy.value === 'price-low')
-    return matchingSkins.sort((first, second) => first.price - second.price);
-  if (sortBy.value === 'price-high')
-    return matchingSkins.sort((first, second) => second.price - first.price);
-  return matchingSkins;
+}
+useSeoMeta({
+  title: () => `${title.value} | Dropzone`,
+  description: 'Browse games, accounts, digital essentials, gaming gear and complete setups.',
 });
 </script>
-
 <template>
-  <main class="storefront">
+  <div class="storefront dz-store">
     <SiteHeader />
-    <section class="standard-hero shop-page-hero">
-      <div>
-        <span class="eyebrow"><span /> THE DROPZONE COLLECTION</span>
-        <h1>Find your next<br ><em>favorite.</em></h1>
-        <p>Curated looks for the moments everyone remembers.</p>
-      </div>
-      <div class="shop-hero-stamp">
-        <span>DROP</span><strong>005</strong><i>NEW SEASON / LIVE NOW</i>
-      </div>
-    </section>
-
-    <section class="catalog-section">
-      <div class="catalog-toolbar">
-        <div class="catalog-categories" aria-label="Filter skins by category">
-          <Button
-            v-for="category in categories"
-            :key="category"
-            variant="ghost"
-            size="sm"
-            :class="['category-button', { 'category-active': activeCategory === category }]"
-            :aria-pressed="activeCategory === category"
-            @click="activeCategory = category"
+    <main>
+      <StoreLayout>
+        <nav class="dz-breadcrumb" aria-label="Breadcrumb">
+          <NuxtLink to="/">Home</NuxtLink><StoreIcon name="next" :size="14" /><NuxtLink to="/shop"
+            >Shop</NuxtLink
+          ><template v-if="selected.category"
+            ><StoreIcon name="next" :size="14" /><NuxtLink
+              :to="categoryRoute(selected.category.id)"
+              >{{ selected.category.label }}</NuxtLink
+            ></template
+          ><template v-if="selected.subcategory"
+            ><StoreIcon name="next" :size="14" /><span aria-current="page">{{
+              selected.subcategory.label
+            }}</span></template
           >
-            {{ category }}
-          </Button>
-        </div>
-        <div class="catalog-controls">
-          <Label class="catalog-search">
-            <span class="sr-only">Search products</span>
-            <Input v-model="searchQuery" type="search" placeholder="Search the collection" />
-            <span aria-hidden="true">⌕</span>
-          </Label>
-          <Label class="sort-control">
-            <span>SORT</span>
-            <Select
+        </nav>
+        <section class="dz-catalog-heading">
+          <span class="section-kicker">GEAR UP FOR WHAT'S NEXT</span>
+          <h1>{{ title }}</h1>
+          <p>
+            {{
+              selected.category?.description ||
+              'Games, gear and digital essentials. All in your corner.'
+            }}
+          </p>
+          <div v-if="selected.category" class="dz-subcategory-chips">
+            <NuxtLink
+              :to="categoryRoute(selected.category.id)"
+              :class="{ active: !selected.subcategory }"
+              >All {{ selected.category.label.toLowerCase() }}</NuxtLink
+            ><NuxtLink
+              v-for="child in selected.category.children"
+              :key="child.id"
+              :to="categoryRoute(selected.category.id, child.id)"
+              :class="{ active: selected.subcategory?.id === child.id }"
+              >{{ child.label }}</NuxtLink
+            >
+          </div>
+        </section>
+        <div class="dz-catalog-toolbar">
+          <span aria-live="polite"
+            ><strong>{{ visibleProducts.length }}</strong> products<span v-if="getQuery('search')">
+              for “{{ getQuery('search') }}”</span
+            ></span
+          ><FormField label="Sort by" input-id="catalog-sort"
+            ><Select
+              id="catalog-sort"
               v-model="sortBy"
-              aria-label="Sort products"
               placeholder=""
               :options="[
                 { label: 'Featured', value: 'featured' },
                 { label: 'Price: low to high', value: 'price-low' },
                 { label: 'Price: high to low', value: 'price-high' },
+                { label: 'Name: A–Z', value: 'name' },
               ]"
-            />
-          </Label>
+          /></FormField>
         </div>
-      </div>
-      <div class="catalog-meta">
-        <span>{{ visibleSkins.length }} ITEMS IN THE DROP</span><span>UPDATED WEEKLY <i>✳</i></span>
-      </div>
-
-      <div v-if="visibleSkins.length" class="product-grid catalog-grid">
-        <Card
-          v-for="(skin, index) in visibleSkins"
-          :key="skin.id"
-          as="article"
-          class="product-card"
-          :style="{ '--card-delay': `${index * 60}ms` }"
+        <Card class="dz-filters"
+          ><StoreIcon name="filter" /><FormField label="Product type" input-id="filter-kind"
+            ><Select
+              id="filter-kind"
+              v-model="kind"
+              placeholder=""
+              :options="[
+                { label: 'All types', value: '' },
+                { label: 'Physical', value: 'physical' },
+                { label: 'Digital', value: 'digital' },
+              ]" /></FormField
+          ><FormField label="Platform" input-id="filter-platform"
+            ><Select
+              id="filter-platform"
+              v-model="platform"
+              placeholder=""
+              :options="[
+                { label: 'All platforms', value: '' },
+                ...['PC', 'Console', 'Steam', 'FACEIT', 'Setup', 'CS2', 'VALORANT'].map(
+                  (value) => ({ label: value, value }),
+                ),
+              ]" /></FormField
+          ><FormField label="Price range" input-id="filter-budget"
+            ><Select
+              id="filter-budget"
+              v-model="budget"
+              placeholder=""
+              :options="[
+                { label: 'Any price', value: '' },
+                { label: 'Under $50', value: '50' },
+                { label: 'Under $100', value: '100' },
+                { label: 'Under $500', value: '500' },
+              ]" /></FormField
+          ><Button v-if="hasFilters" variant="ghost" @click="clearFilters"
+            >Clear filters<StoreIcon name="close" :size="16" /></Button
+        ></Card>
+        <p class="dz-demo-note">
+          Demo catalog · Illustrative products and prices · Checkout is not connected.
+        </p>
+        <div v-if="visibleProducts.length" class="dz-product-grid catalog-grid">
+          <ProductCard v-for="product in visibleProducts" :key="product.id" :product="product" />
+        </div>
+        <Card v-else class="dz-empty"
+          ><StoreIcon name="search" :size="36" />
+          <h2>No products found</h2>
+          <p>Try another search, category or price range.</p>
+          <Button variant="outline" @click="clearFilters">Reset filters</Button
+          ><Button variant="ghost" to="/shop">Browse all products</Button></Card
         >
-          <div
-            :class="['product-art', `tone-${skin.tone}`]"
-            :style="{
-              backgroundImage: `linear-gradient(180deg, rgba(10, 13, 13, .03) 20%, rgba(10, 13, 13, .72) 100%), url('${skin.image}')`,
-            }"
-          >
-            <span class="product-label">{{ skin.label }}</span>
-            <Button
-              variant="ghost"
-              size="icon"
-              :class="['favorite-button', { 'is-favorite': favorites.includes(skin.id) }]"
-              :aria-label="
-                favorites.includes(skin.id) ? 'Remove from favorites' : 'Add to favorites'
-              "
-              :aria-pressed="favorites.includes(skin.id)"
-              @click="toggleFavorite(skin.id)"
-            >
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path
-                  d="M20.8 8.8c0 4.1-8.8 10-8.8 10s-8.8-5.9-8.8-10a4.8 4.8 0 0 1 8.8-2.6 4.8 4.8 0 0 1 8.8 2.6Z"
-                />
-              </svg>
-            </Button>
-            <span class="product-game">{{ skin.game }} <span>•</span> {{ skin.category }}</span>
-          </div>
-          <CardContent class="product-info">
-            <div>
-              <CardTitle>{{ skin.name }}</CardTitle>
-              <span class="product-condition">DIGITAL ITEM <i>·</i> IN STOCK</span>
-            </div>
-            <div class="product-buy">
-              <div class="price">
-                <strong>${{ skin.price.toFixed(2) }}</strong
-                ><del v-if="skin.oldPrice">${{ skin.oldPrice.toFixed(2) }}</del>
-              </div>
-              <Button
-                variant="outline"
-                size="icon"
-                class="add-button"
-                :aria-label="`Add ${skin.name} to cart`"
-                @click="addToCart(skin.id)"
-              >
-                +
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-      <div v-else class="empty-state">
-        Nothing in this drop matches that search. Try a different filter.
-      </div>
-    </section>
-    <section class="catalog-signoff">
-      <span>GOOD TASTE IS A SKILL.</span
-      ><NuxtLink to="/how-it-works">HOW IT WORKS <b>↗</b></NuxtLink>
-    </section>
+      </StoreLayout>
+    </main>
     <SiteFooter />
-  </main>
+  </div>
 </template>

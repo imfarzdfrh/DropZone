@@ -55,9 +55,8 @@ const handleInput = (event: Event) => {
       },
 
       {
-        'px-3 py-2 text-sm': size === 'sm',
-        'px-4 py-3 text-sm': size === 'md',
-        'px-4 py-3 text-base': size === 'lg',
+        'px-3 py-2 text-base': size === 'sm',
+        'px-4 py-3 text-base': size === 'md' || size === 'lg',
       },
     ]"
     :aria-invalid="error ? 'true' : undefined"

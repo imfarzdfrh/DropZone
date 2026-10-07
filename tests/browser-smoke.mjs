@@ -49,7 +49,11 @@ try {
   }
   await go('/shop');
   await page.getByRole('button', { name: 'Add Vandal / Prism Shift to cart', exact: true }).click();
-  await page.getByRole('button', { name: 'Add to favorites', exact: true }).first().click();
+  await page
+    .locator('.product-card')
+    .filter({ hasText: 'Vandal / Prism Shift' })
+    .getByRole('button', { name: 'Add to favorites', exact: true })
+    .click();
   await page.getByRole('link', { name: 'Shopping cart', exact: true }).click();
   await page.getByRole('heading', { name: 'Vandal / Prism Shift' }).waitFor();
   assert.match(await page.locator('.summary-total').innerText(), /24.90/);
@@ -109,7 +113,7 @@ try {
   await page.getByRole('button', { name: 'Remove', exact: true }).click();
   await page.getByText('Your cart is taking a breather.').waitFor();
   await go('/shop?category=invalid');
-  assert.equal(await page.locator('.product-card').count(), 5);
+  assert.equal(await page.locator('.product-card').count(), 29);
   await page.setViewportSize({ width: 390, height: 844 });
   for (const path of [
     '/',
@@ -133,8 +137,8 @@ try {
   await go('/shop?search=Ghost');
   assert.equal(await page.locator('.product-card').count(), 1);
   await go('/shop');
-  await page.getByLabel('Sort products').selectOption('price-low');
-  assert.match(await page.locator('.product-card').first().innerText(), /Ghost/);
+  await page.getByLabel('Sort by').selectOption('price-low');
+  assert.match(await page.locator('.product-card').first().innerText(), /Arena Credits/);
   await page.setViewportSize({ width: 1280, height: 900 });
   await go('/signup');
   await page.locator('#display-name').fill('New Player!');
@@ -145,7 +149,7 @@ try {
   await page.waitForURL('**/account');
   await page.getByRole('heading', { name: 'New Player!', exact: true }).waitFor();
   await page.locator('.header-profile-trigger').click();
-  await page.getByRole('menuitem', { name: /Log out/ }).click();
+  await page.getByRole('button', { name: /Log out/ }).click();
   await page.waitForURL('http://127.0.0.1:3100/');
   await go('/account/profile');
   await page.waitForURL('**/login');

@@ -17,7 +17,7 @@ export default defineNuxtConfig({
 
   modules: ['@nuxt/eslint'],
 
-  css: ['~/assets/css/main.css'],
+  css: ['~/assets/css/main.css', '~/assets/css/store.css'],
 
   vite: {
     plugins: [tailwindcss()],

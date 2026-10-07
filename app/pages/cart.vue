@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { skins } from '~/data/skins';
+import { products as skins } from '~/data/catalog';
 
 useSeoMeta({
   title: 'Your cart | Dropzone',
-  description: 'Review your Dropzone skin picks before checkout.',
+  description: 'Review your Dropzone products before checkout.',
 });
 
 const cart = useCart();
@@ -60,9 +60,12 @@ function beginCheckout() {
                 }"
               />
               <div>
-                <span class="cart-product-game">{{ line.game }} / {{ line.category }}</span>
+                <span class="cart-product-game">{{ line.platform }} / {{ line.category }}</span>
                 <h2>{{ line.name }}</h2>
-                <span class="cart-stock">DIGITAL ITEM · IN STOCK</span>
+                <span class="cart-stock"
+                  >{{ line.kind === 'digital' ? 'Digital item' : 'Physical item' }} · Demo
+                  product</span
+                >
               </div>
             </div>
             <div class="quantity-control">
@@ -105,7 +108,7 @@ function beginCheckout() {
             ><strong>${{ cart.subtotal.value.toFixed(2) }}</strong>
           </div>
           <div class="summary-row">
-            <span>Digital delivery</span><strong class="included">INCLUDED</strong>
+            <span>Delivery</span><strong>Calculated at checkout</strong>
           </div>
           <div v-if="account.user.value" class="cart-wallet-option">
             <Label

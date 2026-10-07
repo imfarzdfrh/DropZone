@@ -1,14 +1,14 @@
 <script setup lang="ts">
 useSeoMeta({
   title: 'How it works | Dropzone',
-  description: 'A quick guide to finding and receiving your next gaming skin.',
+  description: 'A quick guide to browsing the Dropzone demo gaming store.',
 });
 
 const steps = [
   {
     number: '01',
-    title: 'Pick your look',
-    text: 'Browse the drop and find a skin that feels like you. Every listing shows its game, type, and price up front.',
+    title: 'Find your upgrade',
+    text: 'Browse games, digital essentials and physical gear. Compare platform, product type, sample specifications and price.',
   },
   {
     number: '02',
@@ -18,7 +18,7 @@ const steps = [
   {
     number: '03',
     title: 'Gear up',
-    text: 'Once your order is confirmed, delivery instructions arrive with your purchase so you can get in game.',
+    text: 'This is a demo store. No payment or delivery is processed; live checkout and fulfilment will be connected separately.',
   },
 ];
 </script>
@@ -29,7 +29,7 @@ const steps = [
     <section class="standard-hero process-hero">
       <span class="eyebrow"><span /> EASY IN. BACK IN GAME.</span>
       <h1>From drop to<br ><em>drop-in.</em></h1>
-      <p>Good skins should be the easy part. Here’s how getting yours works.</p>
+      <p>From digital essentials to your whole setup. Here’s how to explore the store.</p>
       <Button variant="primary" class="button-primary" to="/shop"
         >Browse the collection <span>↗</span></Button
       >

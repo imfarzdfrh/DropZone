@@ -1,15 +1,13 @@
 <template>
-  <footer class="page-footer">
-    <NuxtLink class="wordmark footer-wordmark" to="/">
-      <span class="wordmark-mark">D</span>
-      <span>DROPZONE<span class="wordmark-period">.</span></span>
-    </NuxtLink>
-    <nav class="footer-links" aria-label="Footer navigation">
-      <NuxtLink to="/shop">Shop all</NuxtLink>
-      <NuxtLink to="/how-it-works">How it works</NuxtLink>
-      <NuxtLink to="/support">Support</NuxtLink>
+  <footer class="dz-footer">
+    <div>
+      <NuxtLink class="dz-logo" to="/">DROPZONE<span class="dz-logo-dot">.</span></NuxtLink>
+      <p>Your game. Your setup. Your next level.</p>
+    </div>
+    <nav aria-label="Footer navigation">
+      <NuxtLink to="/shop">Shop all</NuxtLink><NuxtLink to="/how-it-works">How it works</NuxtLink
+      ><NuxtLink to="/support">Support</NuxtLink>
     </nav>
-    <span class="footer-note">GOOD GAMES. BETTER LOOKS.</span>
-    <span class="footer-copyright">© 2025 DROPZONE</span>
+    <span>Demo storefront<br >© {{ new Date().getFullYear() }} Dropzone</span>
   </footer>
 </template>

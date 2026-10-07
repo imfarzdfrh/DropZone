@@ -37,7 +37,7 @@ const handleChange = (event: Event) => {
     :value="modelValue"
     :disabled="disabled"
     :class="[
-      'min-h-11 w-full rounded-sm border border-border bg-surface px-4 text-sm text-foreground',
+      'min-h-11 w-full rounded-sm border border-border bg-surface px-4 text-base text-foreground',
       'outline-none transition-[border-color,box-shadow,background-color] duration-200',
       'disabled:cursor-not-allowed disabled:opacity-50',
       'focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20',
